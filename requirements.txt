@@ -1,0 +1,15 @@
+setuptools
+langchain
+ipykernel
+python-dotenv
+langchain-groq
+langchain-community
+langchain-huggingface
+sentence-transformers
+langchain-cohere
+pypdf
+faiss-cpu
+structlog
+PyMuPDF
+-e .
+
