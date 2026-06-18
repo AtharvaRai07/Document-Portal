@@ -1,0 +1,17 @@
+faiss_db:
+  collection_name: "document_portal"
+
+embedding_model:
+  provider: "cohere"
+  model_name: "embed-english-light-v3.0"
+
+retriever:
+  top_k: 5
+
+llm:
+  groq:
+    provider: "groq"
+    model_name: "openai/gpt-oss-120b"
+    temperature: 0.7
+
+
