@@ -6,7 +6,6 @@ from langchain_classic.output_parsers import OutputFixingParser
 from models.models import *
 from prompts.prompt_library import PROMPT_REGISTRY
 from utils.models_loader import ModelLoader
-from src.doc_compare.data_ingestion import DocumentIngestion
 from logger.custom_logger import CustomLogger
 from exception.custom_exception import CustomException
 
@@ -46,4 +45,4 @@ class DocumentComparator:
         except Exception as e:
             logger.error(f"Error formatting response: {e}")
             raise CustomException(f"Error formatting response: {e}", sys)
-        
+

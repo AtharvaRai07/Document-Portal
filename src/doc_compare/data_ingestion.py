@@ -80,3 +80,23 @@ class DocumentIngestion:
         except Exception as e:
             logger.error(f"Error reading PDF: {e}")
             raise CustomException(f"Error reading PDF: {e}", sys)
+
+    def combine_documment(self)-> str:
+        try:
+            content_dict = {}
+            doc_parts = []
+
+            for filename in sorted(self.base_dir.iterdir()):
+                if filename.is_file() and filename.suffix == '.pdf':
+                    content_dict[filename.name] = self.read_pdf(filename)
+
+            for filename, content in content_dict.items():
+                doc_parts.append(f"\n --- Document: {filename} ---\n{content}")
+
+            combined_text =  "\n\n".join(doc_parts)
+            logger.info("Successfully combined the documents.")
+            return combined_text
+        
+        except Exception as e:
+            logger.error(f"Error while combining the document: {e}")
+            raise CustomException(f"Error while combining the document: {e}", sys)
