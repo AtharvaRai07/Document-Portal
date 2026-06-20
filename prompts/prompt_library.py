@@ -12,7 +12,7 @@ Analyze this document:
 """)
 
 # Prompt for document comparison
-document_comparision_prompt = ChatPromptTemplate.from_template("""
+document_comparison_prompt = ChatPromptTemplate.from_template("""
 You will be provided with content from two PDFs. Your tasks are as follows:
 
 1. Compare the content in two PDFs
@@ -26,10 +26,10 @@ Input documents:
 
 Your response should follow this format:
 
-{format_instruction}
+{format_instructions}
 """)
 
 PROMPT_REGISTRY = {
     "document_analysis": document_analysis_prompt,
-    "document_comparision": document_comparision_prompt,
+    "document_comparison": document_comparison_prompt,
 }
