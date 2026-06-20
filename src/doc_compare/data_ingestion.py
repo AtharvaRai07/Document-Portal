@@ -12,23 +12,46 @@ class DocumentIngestion:
         self.base_dir = Path(base_dir)
         self.base_dir.mkdir(parents=True, exist_ok=True)
 
-    def delete_existing_files(self):
+    def delete_existing_files(self) -> None:
         """
         Delete existing files at the specified paths
         """
         try:
-            pass
+            if self.base_dir.exists() and self.base_dir.is_dir():
+                for file in self.base_dir.iterdir():
+                    if file.is_file():
+                        file.unlink()
+                        logger.info(f"Deleted existing file: {file}")
+
+                logger.info("All existing files deleted successfully.")
 
         except Exception as e:
             logger.error(f"Error deleting existing files: {e}")
             raise CustomException(f"Error deleting existing files: {e}", sys)
 
-    def save_uploaded_file(self):
+    def save_uploaded_file(self, reference_file, actual_file) -> Path:
         """
         Saves the uploaded file to the specified path
         """
         try:
-            pass
+            self.delete_existing_files()
+            logger.info("Existing files deleted successfully.")
+
+            ref_path = self.base_dir / reference_file.name
+            act_path = self.base_dir / actual_file.name
+
+            if not ref_path.name.endswith('.pdf') or not act_path.name.endswith('.pdf'):
+                logger.error("Both files must be PDFs.")
+                raise ValueError("Both files must be PDFs.")
+
+            with open(ref_path, 'wb') as f:
+                f.write(reference_file.getbuffer())
+
+            with open(act_path, 'wb') as f:
+                f.write(actual_file.getbuffer())
+
+            logger.info(f"Files saved successfully at {ref_path} and {act_path}.")
+            return ref_path, act_path
 
         except Exception as e:
             logger.error(f"Error saving uploaded file: {e}")
@@ -53,7 +76,7 @@ class DocumentIngestion:
 
                 logger.info(f"Successfully read PDF: {pdf_path} with {len(all_text)} pages containing text.")
                 return "\n".join(all_text)
-            
+
         except Exception as e:
             logger.error(f"Error reading PDF: {e}")
             raise CustomException(f"Error reading PDF: {e}", sys)
