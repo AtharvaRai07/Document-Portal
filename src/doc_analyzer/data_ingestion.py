@@ -66,31 +66,31 @@ class DocumentHandler:
             logger.error(f"Error reading PDF: {e}")
             raise CustomException(f"Error reading PDF: {e}", sys)
 
-if __name__ == "__main__":
-    from pathlib import Path
-    from io import BytesIO
+# if __name__ == "__main__":
+#     from pathlib import Path
+#     from io import BytesIO
 
-    pdf_path = r"D:\\Document Protal\\D Portal\\data\\document_analysis\\Attention_is_all_you_need.pdf"
+#     pdf_path = r"D:\\Document Protal\\D Portal\\data\\document_analysis\\Attention_is_all_you_need.pdf"
 
-    class DummyFile:
-        def __init__(self, file_path):
-            self.name = Path(file_path).name
-            self._file_path = file_path
+#     class DummyFile:
+#         def __init__(self, file_path):
+#             self.name = Path(file_path).name
+#             self._file_path = file_path
 
-        def getbuffer(self):
-            return open(self._file_path, 'rb').read()
+#         def getbuffer(self):
+#             return open(self._file_path, 'rb').read()
 
 
-    dummy_pdf = DummyFile(pdf_path)
+#     dummy_pdf = DummyFile(pdf_path)
 
-    handler = DocumentHandler()
+#     handler = DocumentHandler()
 
-    try:
-        saved_path = handler.save_pdf(dummy_pdf)
-        print(f"PDF saved at: {saved_path}")
+#     try:
+#         saved_path = handler.save_pdf(dummy_pdf)
+#         print(f"PDF saved at: {saved_path}")
 
-        content = handler.read_pdf(saved_path)
-        print(f"PDF content:\n{content[:500]}...")
+#         content = handler.read_pdf(saved_path)
+#         print(f"PDF content:\n{content[:500]}...")
 
-    except Exception as e:
-        print(f"Error: {e}")
+#     except Exception as e:
+#         print(f"Error: {e}")

@@ -96,7 +96,7 @@ class DocumentIngestion:
             combined_text =  "\n\n".join(doc_parts)
             logger.info("Successfully combined the documents.")
             return combined_text
-        
+
         except Exception as e:
             logger.error(f"Error while combining the document: {e}")
             raise CustomException(f"Error while combining the document: {e}", sys)

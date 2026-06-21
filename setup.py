@@ -9,7 +9,6 @@ def parse_requirements(filename):
             if line.strip() and not line.startswith("#") and not line.startswith("-e")
         ]
 
-
 setup(
     name="Document Portal",
     author="Atharva Rai",
