@@ -7,6 +7,7 @@ embedding_model:
 
 retriever:
   top_k: 5
+  search_type: "similarity"
 
 llm:
   groq:
