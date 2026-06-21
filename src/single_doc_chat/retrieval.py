@@ -24,7 +24,7 @@ class ConversationalRAG:
             logger.error(f"Error initializing ConversationalRAG: {e} with session_id: {session_id}")
             raise CustomException(f"Error initializing ConversationalRAG: {e}", sys)
 
-    def _load_ll(self):
+    def _load_llm(self):
         try:
             pass
 
