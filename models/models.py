@@ -23,7 +23,7 @@ class ChangeFormat(BaseModel):
 class SummaryResponse(RootModel[List[ChangeFormat]]):
     pass
 
-class PromptTyepe(str, Enum):
+class PromptType(str, Enum):
     DOCUMENT_ANALYSIS = "document_analysis"
     DOCUMENT_COMPARISON = "document_comparison"
     CONTEXTUALIZE_QUESTION = "contextualize_question"

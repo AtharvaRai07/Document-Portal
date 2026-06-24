@@ -61,12 +61,12 @@ class SingleDocIngestor:
             logger.info(f"Documents split into chunks: {len(chunks)}")
 
             embeddings = self.model_loader.load_embedding_model()
-            vector_store = FAISS.from_documents(documents=chunks, embedding=embeddings, search_kwargs={"k": self.config['retriever']['k']})
+            vector_store = FAISS.from_documents(documents=chunks, embedding=embeddings)
 
             vector_store.save_local(str(self.faiss_dir))
             logger.info(f"Vector store created with {vector_store.index.ntotal} vectors and saved to {self.faiss_dir}")
 
-            retriever = vector_store.as_retriever(search_type=self.config['retriever']['search_type'])
+            retriever = vector_store.as_retriever(search_kwargs={"k": self.config['retriever']['k']})
             logger.info("Retriever created successfully")
             return retriever
 
