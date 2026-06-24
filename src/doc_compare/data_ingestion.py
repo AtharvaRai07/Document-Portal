@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
+import uuid
 import fitz
+from datetime import datetime, timezone
 
 from logger.custom_logger import CustomLogger
 from exception.custom_exception import CustomException
@@ -8,39 +10,25 @@ from exception.custom_exception import CustomException
 logger = CustomLogger().get_logger(__name__)
 
 class DocumentIngestion:
-    def __init__(self, base_dir: str):
+    def __init__(self, base_dir: str, session_id = None):
         self.base_dir = Path(base_dir)
-        self.base_dir.mkdir(parents=True, exist_ok=True)
+        self.session_id = session_id or f"session_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_uuid{uuid.uuid4().hex[:8]}"
+        self.session_path = self.base_dir / self.session_id
+        self.session_path.mkdir(parents=True, exist_ok=True)
 
-    def delete_existing_files(self) -> None:
-        """
-        Delete existing files at the specified paths
-        """
-        try:
-            if self.base_dir.exists() and self.base_dir.is_dir():
-                for file in self.base_dir.iterdir():
-                    if file.is_file():
-                        file.unlink()
-                        logger.info(f"Deleted existing file: {file}")
-
-                logger.info("All existing files deleted successfully.")
-
-        except Exception as e:
-            logger.error(f"Error deleting existing files: {e}")
-            raise CustomException(f"Error deleting existing files: {e}", sys)
+        logger.info(f"DocumentIngestion initialized with base_dir: {self.base_dir}, session_id: {self.session_id}, session_path: {self.session_path}")
 
     def save_uploaded_file(self, reference_file, actual_file) -> Path:
         """
         Saves the uploaded file to the specified path
         """
         try:
-            self.delete_existing_files()
             logger.info("Existing files deleted successfully.")
 
-            ref_path = self.base_dir / reference_file.name
-            act_path = self.base_dir / actual_file.name
+            ref_path = self.session_path / reference_file.name
+            act_path = self.session_path / actual_file.name
 
-            if not ref_path.name.endswith('.pdf') or not act_path.name.endswith('.pdf'):
+            if not reference_file.name.endswith('.pdf') or not actual_file.name.endswith('.pdf'):
                 logger.error("Both files must be PDFs.")
                 raise ValueError("Both files must be PDFs.")
 
@@ -86,7 +74,7 @@ class DocumentIngestion:
             content_dict = {}
             doc_parts = []
 
-            for filename in sorted(self.base_dir.iterdir()):
+            for filename in sorted(self.session_path.iterdir()):
                 if filename.is_file() and filename.suffix == '.pdf':
                     content_dict[filename.name] = self.read_pdf(filename)
 
@@ -94,9 +82,31 @@ class DocumentIngestion:
                 doc_parts.append(f"\n --- Document: {filename} ---\n{content}")
 
             combined_text =  "\n\n".join(doc_parts)
-            logger.info("Successfully combined the documents.")
+            logger.info(f"Successfully combined the documents with total length: {len(combined_text)} and session_id: {self.session_id}")
             return combined_text
 
         except Exception as e:
             logger.error(f"Error while combining the document: {e}")
             raise CustomException(f"Error while combining the document: {e}", sys)
+
+    def clean_old_sessions(self, keep_latest: int = 3):
+        """
+        Method to delete older sessions folders, keeping only the latest N
+        """
+        try:
+            sessoin_folders = sorted(
+                [f for f in self.base_dir.iterdir() if f.is_dir()],
+                reverse=True
+            )
+
+            for folder in sessoin_folders[keep_latest:]:
+                for file in folder.iterdir():
+                    if file.is_file():
+                        file.unlink()
+                folder.rmdir()
+
+                logger.info(f"Deleted old session folder: {folder}")
+
+        except Exception as e:
+            logger.error(f"Error while cleaning old sessions: {e}")
+            raise CustomException(f"Error while cleaning old sessions: {e}", sys)

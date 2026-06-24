@@ -26,7 +26,7 @@ class DocumentComparator:
         """
         inputs = {
             "combined_docs": combined_docs,
-            "format_instructions": self.parser.get_format_instructions()
+            "format_instruction": self.parser.get_format_instructions()
         }
         logger.info(f"Starting document comaprison with inputs: {inputs}")
         repsonse = self.chain.invoke(inputs)
