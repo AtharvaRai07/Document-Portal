@@ -79,7 +79,18 @@ class DocumentIngestor:
 
     def _create_retriever(self, documents):
         try:
-            pass
+            splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=300)
+            chunks = splitter.split_documents(documents)
+            logger.info(f"Total chunks created: {len(chunks)}")
+
+            embeddings = self.model_loader.load_embedding_model()
+            vectorstore = FAISS.from_documents(chunks, embeddings)
+
+            vectorstore.save_local(str(self.faiss_dir))
+            logger.info(f"Vectorstore saved at: {self.faiss_dir}")
+
+            retriever = vectorstore.as_retriever(search_type=self.config['retriever']['search_type'], search_kwargs={"k": self.config['retriever']['top_k']})
+            return retriever
 
         except Exception as e:
             logger.error(f"Error creating retriever: {e}")
