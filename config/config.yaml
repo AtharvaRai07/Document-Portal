@@ -15,4 +15,9 @@ llm:
     model_name: "openai/gpt-oss-120b"
     temperature: 0.7
 
-
+supported_extensions: [
+  ".pdf",
+  ".docx",
+  ".txt",
+  ".md"
+]
