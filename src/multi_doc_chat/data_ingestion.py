@@ -4,14 +4,14 @@ import sys
 from datetime import datetime, timezone
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_classic.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 
 from utils.models_loader import ModelLoader
 from utils.config_loader import load_config
 from logger.custom_logger import CustomLogger
 from exception.custom_exception import CustomException
 
-logger = CustomLogger.get_logger(__name__)
+logger = CustomLogger().get_logger(__name__)
 
 class DocumentIngestor:
     def __init__(self, base_dir: str, faiss_dir: str, session_id: str | None = None):
@@ -50,7 +50,7 @@ class DocumentIngestor:
                 temp_file = self.session_dir / unique_filename
 
                 with open(temp_file, 'wb') as f:
-                    f.write(uploaded_file)
+                    f.write(uploaded_file.read())
 
                 logger.info(f"File {uploaded_file.name} saved as {temp_file}")
 
