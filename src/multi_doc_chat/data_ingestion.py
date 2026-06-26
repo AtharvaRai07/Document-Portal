@@ -85,9 +85,9 @@ class DocumentIngestor:
 
             embeddings = self.model_loader.load_embedding_model()
             vectorstore = FAISS.from_documents(chunks, embeddings)
-
-            vectorstore.save_local(str(self.faiss_dir))
-            logger.info(f"Vectorstore saved at: {self.faiss_dir}")
+ 
+            vectorstore.save_local(str(self.session_faiss_dir))
+            logger.info(f"Vectorstore saved at: {self.session_faiss_dir}")
 
             retriever = vectorstore.as_retriever(search_type=self.config['retriever']['search_type'], search_kwargs={"k": self.config['retriever']['top_k']})
             return retriever
