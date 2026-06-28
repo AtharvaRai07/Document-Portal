@@ -85,7 +85,7 @@ class DocumentIngestor:
 
             embeddings = self.model_loader.load_embedding_model()
             vectorstore = FAISS.from_documents(chunks, embeddings)
- 
+
             vectorstore.save_local(str(self.session_faiss_dir))
             logger.info(f"Vectorstore saved at: {self.session_faiss_dir}")
 
