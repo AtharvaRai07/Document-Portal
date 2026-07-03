@@ -1,27 +1,28 @@
-import yaml
 import os
-import sys
+from pathlib import Path
 
-from logger.custom_logger import CustomLogger
-from exception.custom_exception import CustomException
+import yaml
 
-logger = CustomLogger().get_logger(__name__)
+def _project_root() -> Path:
+    # .../utils/config_loader.py -> parents[1] == project root
+    return Path(__file__).resolve().parents[1]
 
 
-def load_config(config_path: str = "config/config.yaml") -> dict:
-    try:
-        logger.info(f"Loading config file from: {config_path}")
+def load_config(config_path: str | None = None) -> dict:
+    """
+    Resolve config path reliably irrespective of CWD.
+    Priority: explicit arg > CONFIG_PATH env > <project_root>/config/config.yaml
+    """
+    env_path = os.getenv("CONFIG_PATH")
+    if config_path is None:
+        config_path = env_path or str(_project_root() / "config" / "config.yaml")
 
-        with open(config_path, 'r') as file:
-            config = yaml.safe_load(file)
+    path = Path(config_path)
+    if not path.is_absolute():
+        path = _project_root() / path
 
-            logger.info(f"Config file loaded successfully: {config_path}")
-            return config
+    if not path.exists():
+        raise FileNotFoundError(f"Config file not found: {path}")
 
-    except Exception as e:
-        logger.error("Failed to load the config file")
-        raise CustomException(e, sys)
-
-# if __name__== "__main__":
-#     config = load_config()
-#     logger.info(f"Loaded configuration: {config}")
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}

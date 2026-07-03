@@ -2,6 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from utils.config_loader import load_config
+from .config_loader import load_config
 from langchain_groq import ChatGroq
 from langchain_cohere import CohereEmbeddings
 

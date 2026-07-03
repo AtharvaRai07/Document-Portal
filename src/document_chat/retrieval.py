@@ -1,7 +1,7 @@
 import sys
 import os
 from operator import itemgetter
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from langchain_core.messages import BaseMessage
 from langchain_core.output_parsers import StrOutputParser
@@ -42,7 +42,13 @@ class ConversationalRAG:
             raise CustomException(f"Error initializing ConversationalRAG: {e}", sys)
 
 
-    def load_retriever_from_faiss(self, index_path: str = None, index_name: str = None):
+    def load_retriever_from_faiss(
+        self,
+        index_path: str = None,
+        index_name: str = "index",
+        search_type: str = "similarity",
+        search_kwargs: Optional[Dict[str, Any]] = None,
+    ):
         try:
             if not os.path.isdir(index_path):
                 raise FileNotFoundError(f"FAISS index directory not found: {index_path}")
@@ -50,7 +56,10 @@ class ConversationalRAG:
             embeddings = ModelLoader().load_embedding_model()
             vectorstore = FAISS.load_local(index_path, embeddings, index_name=index_name, allow_dangerous_deserialization=True)
 
-            self.retriever = vectorstore.as_retriever(search_type=self.config['retriever']['search_type'], search_kwargs={"k": self.config['retriever']['top_k']})
+            if search_kwargs is None:
+                search_kwargs = {"k": self.config['retriever']['top_k']}
+
+            self.retriever = vectorstore.as_retriever(search_type=search_type, search_kwargs=search_kwargs)
             self._build_lcel_chain()
 
             logger.info(f"FAISS retriever loaded from {index_path} with index name: {index_name}")

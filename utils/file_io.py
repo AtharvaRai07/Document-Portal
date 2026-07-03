@@ -1,4 +1,5 @@
 import uuid
+import sys
 import hashlib
 import shutil
 from pathlib import Path
@@ -29,14 +30,14 @@ def save_uploaded_file(uploaded_file: Iterable, target_dir: Path) -> List[Path]:
             ext = Path(name).suffix.lower()
             if ext not in config.get("supported_extensions", []):
                 logger.warning(f"Unsupported file extension: {ext}")
-                raise CustomException(f"Unsupported file extension: {ext}")
-                continue
+                raise CustomException(f"Unsupported file extension: {ext}", sys)
 
             fname = f"f{uuid.uuid4().hex[:8]}{ext}"
-            out = target_dir
+            out = target_dir / fname
             with open(out, 'wb') as f:
                 if hasattr(uf, "file"):
-                    f.write(uf.read())
+                    uf.file.seek(0)
+                    f.write(uf.file.read())
                 else:
                     f.write(uf.getbuffer())
 
@@ -47,4 +48,4 @@ def save_uploaded_file(uploaded_file: Iterable, target_dir: Path) -> List[Path]:
 
     except Exception as e:
         logger.error(f"Error saving uploaded files: {e}")
-        raise CustomException(f"Error saving uploaded files: {e}")
+        raise CustomException(f"Error saving uploaded files: {e}", sys)

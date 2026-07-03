@@ -13,3 +13,4 @@ venv/
 .env
 test.py
 archive
+faiss_index

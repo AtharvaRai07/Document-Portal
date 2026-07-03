@@ -90,7 +90,7 @@ class FAISSManager:
         return self.vector_store
 
 class ChatIngestor:
-    def __init__(self, temp_base: str = "data", faiss_base: str = "faiss_index", use_session_dirs: bool = True, session_id: Optional[str] = None):
+    def __init__(self, temp_base: str = str(Path(__file__).resolve().parents[2] / "data" / "document_chat"), faiss_base: str = str(Path(__file__).resolve().parents[2] / "faiss_index"), use_session_dirs: bool = True, session_id: Optional[str] = None):
         try:
             self.model_loader = ModelLoader()
             self.config = load_config()
@@ -108,7 +108,7 @@ class ChatIngestor:
 
         except Exception as e:
             logger.error(f"Error initializing ChatIngestor: {e}")
-            raise CustomException(f"Error initializing ChatIngestor: {e}") from e
+            raise CustomException(f"Error initializing ChatIngestor: {e}", sys) from e
 
 
     def _resolve_dir(self, base_dir: Path):
@@ -145,7 +145,7 @@ class ChatIngestor:
 
         except Exception as e:
             logger.error(f"Error building retriever: {e}")
-            raise CustomException(f"Error building retriever: {e}") from e
+            raise CustomException(f"Error building retriever: {e}", sys) from e
 
 
 class DocHandler:
@@ -191,9 +191,9 @@ class DocHandler:
             logger.error(f"Error reading PDF: {e}")
             raise CustomException(f"Error reading PDF: {e}") from e
 
-class DocumentComparator:
+class DocComparator:
     def __init__(self, base_dir: Optional[str] = None, session_id: Optional[str] = None):
-        self.base_dir = Path(base_dir)
+        self.base_dir = Path(base_dir) if base_dir is not None else Path(__file__).resolve().parents[2] / "data" / "document_compare"
         self.session_id = session_id or _session_id()
         self.session_path = self.base_dir / self.session_id
         self.session_path.mkdir(parents=True, exist_ok=True)
