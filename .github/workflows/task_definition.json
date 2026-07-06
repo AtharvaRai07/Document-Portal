@@ -29,7 +29,7 @@
       "secrets": [
         {
           "name": "API_KEYS",
-          "valueFrom": "arn:aws:secretsmanager:ap-south-1:324037276188:secret:document_portal_secrets-4ipdHa:secret:API_KEYS"
+          "valueFrom": "arn:aws:secretsmanager:ap-south-1:324037276188:secret:document_protal_secrets-4ipdHa:secret:API_KEYS"
         }
 
       ],
