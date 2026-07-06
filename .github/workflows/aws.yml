@@ -61,6 +61,7 @@ jobs:
                 echo "Pushing Docker image to ECR..."
                 docker push $IMAGE_URI
                 echo "image=$IMAGE_URI" >> $GITHUB_OUTPUT
+                echo "DEBUG: IMAGE_URI IS -> $IMAGE_URI"
 
     deploy:
         name: Deploy to ECS Fargate
