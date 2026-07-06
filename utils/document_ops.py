@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable, List
 from fastapi import UploadFile
-from langchain_classic.schema import Document
+from langchain_core.documents import Document
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
 from utils.config_loader import load_config
 from logger.custom_logger import CustomLogger
