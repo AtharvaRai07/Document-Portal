@@ -8,6 +8,16 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from src.document_ingestion.data_ingestion import (
+    ChatIngestor,
+    DocComparator,
+    DocHandler,
+    FAISSManager,
+)
+from src.doc_analyzer.data_analysis import DocumentAnalyzer
+from src.doc_compare.document_comparator import DocumentComparator
+from src.document_chat.retrieval import ConversationalRAG
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 FAISS_BASE = os.getenv("FAISS_BASE", str(BASE_DIR / "faiss_index"))
 UPLOAD_BASE = os.getenv("UPLOAD_BASE", str(BASE_DIR / "data" / "document_chat"))
@@ -62,9 +72,6 @@ def _read_pdf_via_handler(handler: DocHandler, path: str) -> str:
 @app.post("/analyze")
 async def analyze_document(file: UploadFile = File(...)) -> Any:
     try:
-        from src.document_ingestion.data_ingestion import DocHandler
-        from src.doc_analyzer.data_analysis import DocumentAnalyzer
-
         dh = DocHandler()
         saved_path = dh.save_pdf(FastAPIFileAdapter(file))
         text = _read_pdf_via_handler(dh, saved_path)
@@ -80,9 +87,6 @@ async def analyze_document(file: UploadFile = File(...)) -> Any:
 @app.post('/compare')
 async def compare_documents(reference: UploadFile = File(...), actual: UploadFile = File(...)) -> Any:
     try:
-        from src.document_ingestion.data_ingestion import DocComparator
-        from src.doc_compare.document_comparator import DocumentComparator
-
         dc = DocComparator()
         ref_path, act_path = dc.save_uploaded_files(FastAPIFileAdapter(reference), FastAPIFileAdapter(actual))
         _ = ref_path, act_path
@@ -106,8 +110,6 @@ async def index_chat(
     k: int = Form(10),
 ) -> Any:
     try:
-        from src.document_ingestion.data_ingestion import ChatIngestor
-
         wrapped = [FastAPIFileAdapter(f) for f in files]
         ci = ChatIngestor(
             temp_base=UPLOAD_BASE,
@@ -136,8 +138,6 @@ async def chat_query(
     k: int = Form(10),
 ) -> Any:
     try:
-        from src.document_chat.retrieval import ConversationalRAG
-
         if use_session_dirs and not session_id:
             raise HTTPException(status_code=400, detail="session_id is required when use_session_dirs=True")
 
