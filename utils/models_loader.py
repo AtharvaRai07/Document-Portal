@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from dotenv import load_dotenv
 from utils.config_loader import load_config
 from .config_loader import load_config
@@ -11,12 +12,62 @@ from exception.custom_exception import CustomException
 
 logger = CustomLogger().get_logger(__name__)
 
-class ModelLoader:
+class ApiKeyManager:
+    REQUIRED_KEYS = ["GROQ_API_KEY", "GOOGLE_API_KEY"]
+
     def __init__(self):
-        load_dotenv()
-        self._validate_env()
+        self.api_keys = {}
+        raw = os.getenv("API_KEYS")
+
+        if raw:
+            try:
+                parsed = json.loads(raw)
+                if not isinstance(parsed, dict):
+                    raise ValueError("API_KEYS is not a valid JSON object")
+                self.api_keys = parsed
+                logger.info("Loaded API_KEYS from ECS secret")
+            except Exception as e:
+                logger.warning("Failed to parse API_KEYS as JSON", error=str(e))
+
+        # Fallback to individual env vars
+        for key in self.REQUIRED_KEYS:
+            if not self.api_keys.get(key):
+                env_val = os.getenv(key)
+                if env_val:
+                    self.api_keys[key] = env_val
+                    logger.info(f"Loaded {key} from individual env var")
+
+        # Final check
+        missing = [k for k in self.REQUIRED_KEYS if not self.api_keys.get(k)]
+        if missing:
+            logger.error("Missing required API keys", missing_keys=missing)
+            raise CustomException("Missing API keys", sys)
+
+        logger.info("API keys loaded", keys={k: v[:6] + "..." for k, v in self.api_keys.items()})
+
+
+    def get(self, key: str) -> str:
+        val = self.api_keys.get(key)
+        if not val:
+            raise KeyError(f"API key for {key} is missing")
+        return val
+
+
+class ModelLoader:
+    """
+    Loads embedding models and LLMs based on config and environment.
+    """
+
+    def __init__(self):
+        if os.getenv("ENV", "local").lower() != "production":
+            load_dotenv()
+            logger.info("Running in LOCAL mode: .env loaded")
+        else:
+            logger.info("Running in PRODUCTION mode")
+
+        self.api_key_mgr = ApiKeyManager()
         self.config = load_config()
-        logger.info("Configuration loaded successfully", config_keys=list(self.config.keys()))
+        logger.info("YAML config loaded", config_keys=list(self.config.keys()))
 
     def _validate_env(self):
         """
