@@ -5,6 +5,7 @@ packages = [
     "ipykernel",
     "langchain_groq",
     "langchain_google_genai",
+    "langchain_cohere",
     "langchain-community",
     "faiss-cpu",
     "structlog",

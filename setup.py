@@ -22,9 +22,5 @@ setup(
     extras_require={
         "dev": ["pytest", "pylint", "ipykernel"]
     },
-    classifiers=[
-        "Programming Language :: Python :: 3.10",
-        "License :: OSI Approved :: MIT License",
-    ],
     python_requires=">=3.10",
 )

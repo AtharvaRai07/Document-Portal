@@ -3,10 +3,13 @@ import traceback
 
 class CustomException(Exception):
     def __init__(self, error_message: str, error_detail:sys):
-
         _, _, exc_tb = error_detail.exc_info()
-        self.filename = exc_tb.tb_frame.f_code.co_filename
-        self.lineno = exc_tb.tb_lineno
+        if exc_tb is not None:
+            self.filename = exc_tb.tb_frame.f_code.co_filename
+            self.lineno = exc_tb.tb_lineno
+        else:
+            self.filename = "<unknown>"
+            self.lineno = 0
         self.error_message = str(error_message)
         self.traceback = ''.join(traceback.format_exception(*error_detail.exc_info()))
 
