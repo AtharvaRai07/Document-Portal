@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_classic.output_parsers import OutputFixingParser
+from langchain.output_parsers.fix import OutputFixingParser
 
 from models.models import *
 from prompts.prompt_library import PROMPT_REGISTRY
