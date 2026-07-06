@@ -1,7 +1,7 @@
 import os
 import sys
 from langchain_core.output_parsers import JsonOutputParser
-from langchain_classic.output_parsers import OutputFixingParser
+from langchain.output_parsers import OutputFixingParser
 from utils.models_loader import ModelLoader
 from prompts.prompt_library import PROMPT_REGISTRY
 from models.models import *
