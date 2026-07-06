@@ -164,9 +164,9 @@ Resources:
               Value: DOCUMENT PORTAL
           Secrets:
             - Name: GROQ_API_KEY
-              ValueFrom: arn:aws:secretsmanager:ap-south-1:324037276188:secret:document_protal_secrets-4ipdHa:secret:GROQ_API_KEY
+              ValueFrom: arn:aws:secretsmanager:ap-south-1:324037276188:secret:document_portal_secrets-i9gZ9t:GROQ_API_KEY
             - Name: COHERE_API_KEY
-              ValueFrom: arn:aws:secretsmanager:ap-south-1:324037276188:secret:document_protal_secrets-4ipdHa:secret:COHERE_API_KEY
+              ValueFrom: arn:aws:secretsmanager:ap-south-1:324037276188:secret:document_portal_secrets-i9gZ9t:COHERE_API_KEY
           LogConfiguration:
             LogDriver: awslogs
             Options:
