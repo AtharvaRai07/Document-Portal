@@ -3,6 +3,7 @@ packages = [
     "langchain",
     "python-dotenv",
     "ipykernel",
+    "langchain_classic",
     "langchain_groq",
     "langchain_google_genai",
     "langchain_cohere",
