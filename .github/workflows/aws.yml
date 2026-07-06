@@ -12,8 +12,6 @@ env:
     ECR_SERVICE: document-portal-service
     ECR_CLUSTER: document-portal-cluster-new
     ECR_TASK_DEFINITION: .github/workflows/task_definition.json
-    STACK_NAME: document-portal-stack
-    CF_TEMPLATE: infrastructure/document_portal_cf.yml
     CONTAINER_NAME: document-portal-container
 
 permissions:
@@ -82,22 +80,21 @@ jobs:
                 aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                 aws-region: ${{ env.AWS_REGION }}
 
-          - name: Login to Amazon ECR
-            id: login-ecr-deploy
-            uses: aws-actions/amazon-ecr-login@v1
+          - name: Render Task Definition
+            id: render_task
+            uses: aws-actions/amazon-ecs-render-task-definition@v1
+            with:
+                task-definition: ${{ env.ECR_TASK_DEFINITION }}
+                container-name: ${{ env.CONTAINER_NAME }}
+                image: ${{ needs.build_and_push.outputs.image }}
 
-          - name: Set image URI
-            id: set-image
-            run: echo "image=${{ steps.login-ecr-deploy.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
-
-          - name: Deploy CloudFormation stack
-            run: |
-                aws cloudformation deploy \
-                  --stack-name ${{ env.STACK_NAME }} \
-                  --template-file ${{ env.CF_TEMPLATE }} \
-                  --parameter-overrides ImageUrl=${{ steps.set-image.outputs.image }} \
-                  --capabilities CAPABILITY_NAMED_IAM \
-                  --region ${{ env.AWS_REGION }}
+          - name: Deploy to ECS
+            uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+            with:
+                task-definition: ${{ steps.render_task.outputs.task-definition }}
+                service: ${{ env.ECR_SERVICE }}
+                cluster: ${{ env.ECR_CLUSTER }}
+                wait-for-service-stability: true
 
           - name: Done!
             run: echo "Deployment to ECS Fargate completed successfully!"
