@@ -31,7 +31,7 @@ jobs:
         needs: [check_status]
         runs-on: ubuntu-latest
         outputs:
-            image: ${{ steps.build-image.outputs.image }}
+        image: ${{ steps.build_image.outputs.image }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -50,7 +50,7 @@ jobs:
               uses: aws-actions/amazon-ecr-login@v1
 
             - name: Build and Push Docker Image
-              id: build-image
+              id: build_image
               env:
                 ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
                 IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
@@ -80,7 +80,7 @@ jobs:
                 aws-region: ${{ env.AWS_REGION }}
 
           - name: Render Task Definition
-            id: render-task
+            id: render_task
             uses: aws-actions/amazon-ecs-render-task-definition@v1
             with:
                 task-definition: ${{ env.ECR_TASK_DEFINITION }}
@@ -90,7 +90,7 @@ jobs:
           - name: Deploy to ECS
             uses: aws-actions/amazon-ecs-deploy-task-definition@v1
             with:
-                task-definition: ${{ steps.render-task.outputs.task-definition }}
+                task-definition: ${{ steps.render_task.outputs.task-definition }}
                 service: ${{ env.ECR_SERVICE }}
                 cluster: ${{ env.ECR_CLUSTER }}
                 wait-for-service-stability: true
