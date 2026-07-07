@@ -102,6 +102,13 @@ Resources:
     Properties:
       ClusterName: document-portal-cluster
 
+  ### CloudWatch Logs
+  ECSLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /ecs/documentportal
+      RetentionInDays: 14
+
   ### ECS Execution Role with Secrets + Logs
   ECSExecutionRole:
     Type: AWS::IAM::Role
@@ -173,6 +180,7 @@ Resources:
               awslogs-group: /ecs/documentportal
               awslogs-region: !Ref AWS::Region
               awslogs-stream-prefix: ecs
+              awslogs-create-group: "true"
 
   ### ECS Service
   ECSService:
